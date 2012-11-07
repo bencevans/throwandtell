@@ -1,0 +1,45 @@
+body {
+  background-color:#eee;
+  margin:0;
+  font-family: Verdana;
+  color: #111;
+}
+header {
+  height:40px;
+  background-color:purple;
+  color:#eee;
+  box-shadow: 0 0 4px black;
+}
+header .container {
+  border:1px solid #800080;
+  border-width:0 1px;
+  height:40px;
+}
+header .container h1 {
+  font-size: 20px;
+  padding: 10px;
+  text-shadow: 0 0 5px black;
+  margin: 0;
+  font-weight: bold;
+  padding-left: 0;
+}
+header .container a {
+  font-size:16px;
+  padding:12px;
+  color:#ccc;
+  text-decoration: none;
+}
+header .container .gravatar {
+  margin-top:2px;
+  box-shadow: 0 0 5px black;
+}
+.goright {
+  float:right;
+}
+.container {
+  width:600px;
+  margin:auto;
+}
+#content {
+  padding:10px;
+}
