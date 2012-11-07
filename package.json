@@ -1,0 +1,23 @@
+{
+  "name": "ThrowAndTell",
+  "version": "0.0.0",
+  "description": "Automated Error Reporting Engine",
+  "main": "index.js",
+  "dependencies": {
+    "redis": "~0.8.2",
+    "kue": "~0.4.1",
+    "hbs": "~1.0.9",
+    "github": "~0.1.7",
+    "request": "~2.11.4",
+    "express": "~3.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@bitbucket.org/bencevans/throwandtell.git"
+  },
+  "author": "Ben Evans <ben@bensbit.co.uk> (http://bensbit.co.uk)",
+}
