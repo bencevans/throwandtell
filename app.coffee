@@ -12,13 +12,13 @@ require './helpers'
 
 global.config =
   redis:
-    pre: 'throwandtell'
+    pre: process.env.REDIS_PRE || 'throwandtell'
   mongo:
-    host: 'localhost'
-    db: 'ThrowAndTell'
+    host: process.env.MONGO_HOST || 'localhost'
+    db: process.env.MONGO_DB || 'ThrowAndTell'
   github:
-    clientId: '8aad25eb6fae91c19f59'
-    clientSecret: '78a9cd3c406312cdfc2f50c365c5498be91f76bb'
+    clientId: process.env.GITHUB_CLIENTID || '8aad25eb6fae91c19f59'
+    clientSecret: process.env.GITHUB_CLIENTSECRET || '78a9cd3c406312cdfc2f50c365c5498be91f76bb'
 
 # DB Connections
 global.redisClient = redis.createClient()
