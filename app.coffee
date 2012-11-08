@@ -12,7 +12,7 @@ require './helpers'
 
 global.config =
   redis:
-    pre: 'facepalm'
+    pre: 'throwandtell'
   mongo:
     host: 'localhost'
     db: 'ThrowAndTell'
@@ -119,8 +119,8 @@ app.post '/api/v1/report', (req, res, next) ->
     request.post 
       uri: 'https://api.github.com/repos/bencevans/test/issues?access_token=' + accessToken
       json:
-        title: req.body.title || 'FacePalm Report'
-        body: req.body.body + '\n\nReported By [FacePalm](http://localhost:3000)'
+        title: req.body.title || 'ThrowAndTell Report'
+        body: req.body.body + '\n\nReported By [ThrowAndTell](http://localhost:3000)'
     , (err, GHIssueRes, issue) ->
       console.error err if err
 
