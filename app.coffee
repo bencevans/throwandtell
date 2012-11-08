@@ -10,7 +10,7 @@ mongoose = require 'mongoose'
 fs = require 'fs'
 require './helpers'
 
-config =
+global.config =
   redis:
     pre: 'facepalm'
   mongo:
@@ -21,9 +21,9 @@ config =
     clientSecret: '78a9cd3c406312cdfc2f50c365c5498be91f76bb'
 
 # DB Connections
-redisClient = redis.createClient()
+global.redisClient = redis.createClient()
 
-db = mongoose.createConnection(config.mongo.host, config.mongo.db);
+global.db = mongoose.createConnection(config.mongo.host, config.mongo.db);
 
 db.on 'error', console.error.bind(console, 'connection error:')
 db.once 'open', () ->
@@ -36,46 +36,6 @@ for filename in schemaFiles
   global[schemaName] = db.model schemaName, new mongoose.Schema(require('./db/schemas/' + filename))
 
 
-db = {}
-db.save = () ->
-  args = argsToArray arguments
-  if args.length < 3
-    throw new Error('Not Enouph Arguments')
-  console.log args
-  cb = args.pop()
-  data = JSON.stringify args.pop()
-  key = config.redis.pre ? config.redis.pre + ':' : ''
-  key = key + args.join ':'
-  redisClient.set key, data, cb
-
-db.get = () ->
-  args = argsToArray arguments
-  if args.length < 2
-    throw new Error('Not Enouph Arguments')
-  cb = args.pop()
-  key = config.redis.pre ? config.redis.pre + ':' : ''
-  key = key + args.join ':'
-  redisClient.get key, (err, data) ->
-    cb err if err
-    try
-      data = JSON.parse data
-    catch e
-      cb e, data
-    cb null, data
-
-db.getUser = (GHId, cb) ->
-  db.get 'user', GHId, 'github_user', cb
-
-db.setUser = (GHId, data, cb) ->
-  db.set 'user', GHId, 'github_user', data, cb
-
-db.getToken = (GHId, cb) ->
-  db.get 'user', GHId, 'github_token', cb
-
-db.setToken = (GHId, data, cb) ->
-  db.set 'user', GHId, 'github_token', data, cb
-
-
 # Config
 app.set 'view engine', 'html'
 app.engine 'html', require('hbs').__express
@@ -85,7 +45,7 @@ app.use express.cookieSession()
 app.use (req, res, next) ->
   console.log req.session
   if req.session.user
-    db.getUser req.session.user, (err, user) ->
+    getUser req.session.user, (err, user) ->
       console.log 'err', err
       next err if err
       console.log 'user', user
@@ -136,9 +96,9 @@ app.get '/auth/callback', (req, res, next) ->
       next err if err
 
       user.date_synced = new Date()
-      db.save 'user', user.id, 'github_user', user, (err) ->
+      save 'user', user.id, 'github_user', user, (err) ->
         next err if err
-        db.save 'user', user.id, 'github_token', accessToken, (err) ->
+        save 'user', user.id, 'github_token', accessToken, (err) ->
           next err if err
 
           req.session.user = user.id
@@ -156,8 +116,8 @@ app.post '/api/v1/report', (req, res, next) ->
     for line in req.body.trace
       body += '    ' + line
 
-  db.getToken 638535, (err, accessToken) ->
-    db.get
+  getToken 638535, (err, accessToken) ->
+    get
     request.post 
       uri: 'https://api.github.com/repos/bencevans/test/issues?access_token=' + accessToken
       json:
