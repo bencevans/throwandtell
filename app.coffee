@@ -127,13 +127,12 @@ app.post '/api/v1/report', (req, res, next) ->
     req.body.body = '' unless req.body.body
     for line in splitTrace
       req.body.body = req.body.body + '    ' + line + '\n'
-
   Key.findOne
-    _id: req.query.access_key.substr(0,24)
-    secret: req.query.access_key.substr(24, 0)
+    _id: req.query.access_key.substring(0,24)
+    secret: req.query.access_key.substring(24)
   , (err, key) ->
     next err if err
-    res.send {error: 'Unauthenticated'} unless key
+    return res.send {error: 'Unauthenticated'} unless key
 
     getToken key.createdBy, (err, accessToken) ->
       request.post
