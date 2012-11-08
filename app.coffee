@@ -6,17 +6,35 @@ http = require 'http'
 server = http.createServer app
 request = require 'request'
 redis = require 'redis'
+mongoose = require 'mongoose'
+fs = require 'fs'
 require './helpers'
 
 config =
   redis:
     pre: 'facepalm'
+  mongo:
+    host: 'localhost'
+    db: 'ThrowAndTell'
   github:
     clientId: '8aad25eb6fae91c19f59'
     clientSecret: '78a9cd3c406312cdfc2f50c365c5498be91f76bb'
 
 # DB Connections
 redisClient = redis.createClient()
+
+db = mongoose.createConnection(config.mongo.host, config.mongo.db);
+
+db.on 'error', console.error.bind(console, 'connection error:')
+db.once 'open', () ->
+  console.log 'Connected to DB'
+
+schemaFiles = fs.readdirSync './db/schemas'
+for filename in schemaFiles
+  splitFilename = filename.split '.'
+  schemaName = splitFilename[0].charAt(0).toUpperCase() + splitFilename[0].slice(1);
+  global[schemaName] = db.model schemaName, new mongoose.Schema(require('./db/schemas/' + filename))
+
 
 db = {}
 db.save = () ->
