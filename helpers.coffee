@@ -10,7 +10,6 @@ global.save = () ->
   args = argsToArray arguments
   if args.length < 3
     throw new Error('Not Enouph Arguments')
-  console.log args
   cb = args.pop()
   data = JSON.stringify args.pop()
   key = config.redis.pre ? config.redis.pre + ':' : ''
@@ -46,6 +45,6 @@ global.setToken = (GHId, data, cb) ->
 
 
 global.generateKey = (data, cb) ->
-  data.secret = randomstring.generate 64
+  data.secret = randomstring.generate 11
   new Key(data).save(cb)
 

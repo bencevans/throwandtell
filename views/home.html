@@ -5,18 +5,16 @@
 </form>
 <h2>Keys</h2>
 <div class=keycontainer>
+  {{#keys}}
   <table>
     <tr>
       <td>Repository:</td>
-      <td><a href="https://github.com/bencevans">bencevans/test</a></td>
+      <td><a href="https://github.com/{{repository}}">{{repository}}</a></td>
     </tr>
     <tr>
       <td>Access Key:</td>
-      <td>uayvf8wyb97ry9woancur</td>
-    </tr>
-    <tr>
-      <td>Access Secret:</td>
-      <td>ovisuanr94wa048rcw0riaw0m9ei3wxa3o9n8</td>
+      <td>{{_id}}{{secret}} <a href="/{{_id}}/delete">Delete</a></td>
     </tr>
   </table>
+  {{/keys}}
 </div>

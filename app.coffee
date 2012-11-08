@@ -43,6 +43,7 @@ app.use express.logger('dev')
 app.use express.bodyParser()
 app.use express.cookieParser('Newton Faulkner, Keep this secure')
 app.use express.cookieSession()
+# Auth req.user = profile
 app.use (req, res, next) ->
   if req.session.user
     getUser req.session.user, (err, user) ->
@@ -52,6 +53,14 @@ app.use (req, res, next) ->
   else
     next()
 
+# Flash Messages
+app.use (req, res, next) ->
+  if req.session.flashes
+    res.locals.flashMessages = req.session.flashes
+  else
+    req.session.flashes = []
+  next()
+
 # Routes
 app.get '/', (req, res, next) ->
   authenticated = false
@@ -59,7 +68,12 @@ app.get '/', (req, res, next) ->
   if typeof req.session.user == 'undefined'
     res.sendfile 'public/index.html'
   else
-    res.render 'home'
+    Key.find
+      createdBy: req.user.id
+    , (err, keys) ->
+      next err if err
+      res.locals.keys = keys
+      res.render 'home'
 
 app.get '/style.css', (req, res) ->
   res.sendfile './public/style.css'
@@ -114,22 +128,49 @@ app.post '/api/v1/report', (req, res, next) ->
     for line in splitTrace
       req.body.body = req.body.body + '    ' + line + '\n'
 
+  Key.findOne
+    _id: req.query.access_key.substr(0,24)
+    secret: req.query.access_key.substr(24, 0)
+  , (err, key) ->
+    next err if err
+    res.send {error: 'Unauthenticated'} unless key
 
-  getToken 638535, (err, accessToken) ->
-    request.post 
-      uri: 'https://api.github.com/repos/bencevans/test/issues?access_token=' + accessToken
-      json:
-        title: req.body.title || 'ThrowAndTell Report'
-        body: req.body.body + '\n\nReported By [ThrowAndTell](http://localhost:3000)'
-    , (err, GHIssueRes, issue) ->
-      console.error err if err
+    getToken key.createdBy, (err, accessToken) ->
+      request.post
+        uri: 'https://api.github.com/repos/bencevans/test/issues?access_token=' + accessToken
+        json:
+          title: req.body.title || 'ThrowAndTell Report'
+          body: req.body.body + '\n\nReported By [ThrowAndTell](http://localhost:3000)'
+      , (err, GHIssueRes, issue) ->
+        console.error err if err
 
+app.post '/new', (req, res, next) ->
+  keyData =
+    createdBy: req.user.id
+    repository: req.body.repository
+  generateKey keyData, (err, keyObject) ->
+    next err if err
+    res.redirect '/#key-' + keyObject._id
 
 app.get '/logout', (req, res, next) ->
   next() unless req.session
   req.session = null
   res.redirect '/'
 
+app.get '/:key/delete', (req, res, next) ->
+  res.send 404 unless req.user
+  Key.findOne
+    _id: req.params.key
+    createdBy: req.user.id
+  , (err, doc) ->
+    next err if err
+    if doc
+      doc.remove (err) ->
+        next err if err
+        # Flashify Key {{_id}} Successfully Deleted
+        res.redirect '/'
+    else
+      res.send 404
 
   ###
   github.issues.create
