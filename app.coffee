@@ -40,15 +40,13 @@ for filename in schemaFiles
 app.set 'view engine', 'html'
 app.engine 'html', require('hbs').__express
 app.use express.logger('dev')
+app.use express.bodyParser()
 app.use express.cookieParser('Newton Faulkner, Keep this secure')
 app.use express.cookieSession()
 app.use (req, res, next) ->
-  console.log req.session
   if req.session.user
     getUser req.session.user, (err, user) ->
-      console.log 'err', err
       next err if err
-      console.log 'user', user
       req.user = res.locals.user = user
       next()
   else
@@ -61,7 +59,6 @@ app.get '/', (req, res, next) ->
   if typeof req.session.user == 'undefined'
     res.sendfile 'public/index.html'
   else
-    console.log req.user
     res.render 'home'
 
 app.get '/style.css', (req, res) ->
@@ -111,13 +108,14 @@ app.post '/api/v1/report', (req, res, next) ->
   res.send {error:'No Report Body Provided'} unless req.body.body || req.body.trace
 
   if req.body.trace
-    req.body += "\n\n" if req.body
+    splitTrace = req.body.trace.split('\n')
+    req.body.body += "\n\n" if req.body.body
     req.body.body = '' unless req.body.body
-    for line in req.body.trace
-      body += '    ' + line
+    for line in splitTrace
+      req.body.body = req.body.body + '    ' + line + '\n'
+
 
   getToken 638535, (err, accessToken) ->
-    get
     request.post 
       uri: 'https://api.github.com/repos/bencevans/test/issues?access_token=' + accessToken
       json:
@@ -125,7 +123,7 @@ app.post '/api/v1/report', (req, res, next) ->
         body: req.body.body + '\n\nReported By [FacePalm](http://localhost:3000)'
     , (err, GHIssueRes, issue) ->
       console.error err if err
-      console.log issue
+
 
 app.get '/logout', (req, res, next) ->
   next() unless req.session
