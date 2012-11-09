@@ -27,6 +27,9 @@ global.config =
 # DB Connections
 global.redisClient = redis.createClient config.redis.port, config.redis.host
 
+if config.redis.auth
+  redis.auth config.redis.auth
+
 if process.env.MONGOLAB_URI
   global.db = mongoose.createConnection(process.env.MONGOLAB_URI);
 else
