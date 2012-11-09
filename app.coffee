@@ -12,7 +12,7 @@ require './helpers'
 
 global.config =
   site:
-    url: prosess.env.SITE_URL || 'http://localhost:3000'
+    url: process.env.SITE_URL || 'http://localhost:3000'
   redis:
     pre: process.env.REDIS_PRE || 'throwandtell'
   mongo:
