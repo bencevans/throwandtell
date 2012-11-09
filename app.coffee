@@ -17,6 +17,7 @@ global.config =
     port: process.env.REDIS_PORT || 6379
     host: process.env.REDIS_HOST || 'localhost'
     pre: process.env.REDIS_PRE || 'throwandtell'
+    auth: process.env.REDIS_AUTH || null
     noReadyCheck: process.env.REDIS_NOREADYCHECK || false
   mongo:
     host: process.env.MONGO_HOST || 'localhost'
