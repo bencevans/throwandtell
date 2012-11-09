@@ -17,6 +17,7 @@ global.config =
     port: process.env.REDIS_PORT || 6379
     host: process.env.REDIS_HOST || 'localhost'
     pre: process.env.REDIS_PRE || 'throwandtell'
+    noReadyCheck: process.env.REDIS_NOREADYCHECK || false
   mongo:
     host: process.env.MONGO_HOST || 'localhost'
     db: process.env.MONGO_DB || 'ThrowAndTell'
@@ -25,7 +26,7 @@ global.config =
     clientSecret: process.env.GITHUB_CLIENTSECRET || '78a9cd3c406312cdfc2f50c365c5498be91f76bb'
 
 # DB Connections
-global.redisClient = redis.createClient config.redis.port, config.redis.host
+global.redisClient = redis.createClient config.redis.port, config.redis.host, {no_ready_check: config.redis.noReadyCheck}
 
 if process.env.MONGOLAB_URI
   global.db = mongoose.createConnection(process.env.MONGOLAB_URI);
