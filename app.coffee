@@ -11,6 +11,8 @@ fs = require 'fs'
 require './helpers'
 
 global.config =
+  site:
+    url: prosess.env.SITE_URL || 'http://localhost:3000'
   redis:
     pre: process.env.REDIS_PRE || 'throwandtell'
   mongo:
@@ -79,7 +81,7 @@ app.get '/style.css', (req, res) ->
   res.sendfile './public/style.css'
 
 app.get '/auth', (req, res, next) ->
-  res.redirect 'https://github.com/login/oauth/authorize?client_id=8aad25eb6fae91c19f59&scope=repo'
+  res.redirect 'https://github.com/login/oauth/authorize?client_id=' + config.github.clientId + '&scope=repo'
 
 app.get '/auth/callback', (req, res, next) ->
 
