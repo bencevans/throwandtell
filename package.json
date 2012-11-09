@@ -22,5 +22,9 @@
     "type": "git",
     "url": "ssh://git@bitbucket.org/bencevans/throwandtell.git"
   },
-  "author": "Ben Evans <ben@bensbit.co.uk> (http://bensbit.co.uk)"
+  "author": "Ben Evans <ben@bensbit.co.uk> (http://bensbit.co.uk)",
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  }
 }
