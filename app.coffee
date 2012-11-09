@@ -138,10 +138,10 @@ app.post '/api/v1/report', (req, res, next) ->
 
     getToken key.createdBy, (err, accessToken) ->
       request.post
-        uri: 'https://api.github.com/repos/bencevans/test/issues?access_token=' + accessToken
+        uri: 'https://api.github.com/repos/' + key.repository + '/issues?access_token=' + accessToken
         json:
           title: req.body.title || 'ThrowAndTell Report'
-          body: req.body.body + '\n\nReported By [ThrowAndTell](http://localhost:3000)'
+          body: req.body.body + '\n\nReported By [ThrowAndTell](' + sit.config.url + ')'
       , (err, GHIssueRes, issue) ->
         console.error err if err
 
@@ -172,15 +172,6 @@ app.get '/:key/delete', (req, res, next) ->
         res.redirect '/'
     else
       res.send 404
-
-  ###
-  github.issues.create
-    user: 'bencevans'
-    repo: 'test'
-    title: 'Test Title'
-    body: 'Big Stacktrace, remember to indent for markdown!'
-  ###
-
 
 # Start Up
 server.listen process.env.PORT or 3000
