@@ -183,7 +183,7 @@ app.get '/:key/delete', (req, res, next) ->
 # Start Up (Possibly After Redis Auth)
 if config.redis.auth
   redisClient.on 'ready', () ->
-    redis.auth config.redis.auth ,(err) ->
+    redisClient.auth config.redis.auth ,(err) ->
       if err
         console.log err
       else
