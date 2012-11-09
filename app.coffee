@@ -14,6 +14,8 @@ global.config =
   site:
     url: process.env.SITE_URL || 'http://localhost:3000'
   redis:
+    port: process.env.REDIS_PORT || 6379
+    host: process.env.REDIS_HOST || 'localhost'
     pre: process.env.REDIS_PRE || 'throwandtell'
   mongo:
     host: process.env.MONGO_HOST || 'localhost'
@@ -23,7 +25,7 @@ global.config =
     clientSecret: process.env.GITHUB_CLIENTSECRET || '78a9cd3c406312cdfc2f50c365c5498be91f76bb'
 
 # DB Connections
-global.redisClient = redis.createClient()
+global.redisClient = redis.createClient config.redis.port, config.redis.host
 
 global.db = mongoose.createConnection(config.mongo.host, config.mongo.db);
 
