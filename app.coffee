@@ -27,9 +27,6 @@ global.config =
 # DB Connections
 global.redisClient = redis.createClient config.redis.port, config.redis.host
 
-if config.redis.auth
-  redis.auth config.redis.auth
-
 if process.env.MONGOLAB_URI
   global.db = mongoose.createConnection(process.env.MONGOLAB_URI);
 else
@@ -181,5 +178,11 @@ app.get '/:key/delete', (req, res, next) ->
     else
       res.send 404
 
-# Start Up
-server.listen process.env.PORT or 3000
+# Start Up (Possibly After Redis Auth)
+if config.redis.auth
+  redisClient.on 'ready', () ->
+    redis.auth config.redis.auth
+    server.listen process.env.PORT or 3000
+else
+  server.listen process.env.PORT or 3000
+
