@@ -181,8 +181,11 @@ app.get '/:key/delete', (req, res, next) ->
 # Start Up (Possibly After Redis Auth)
 if config.redis.auth
   redisClient.on 'ready', () ->
-    redis.auth config.redis.auth
-    server.listen process.env.PORT or 3000
+    redis.auth config.redis.auth (err) ->
+      if err
+        console.log err
+      else
+        server.listen process.env.PORT or 3000
 else
   server.listen process.env.PORT or 3000
 
