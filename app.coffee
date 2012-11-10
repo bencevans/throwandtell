@@ -150,7 +150,7 @@ app.post '/api/v1/report', (req, res, next) ->
         uri: 'https://api.github.com/repos/' + key.repository + '/issues?access_token=' + accessToken
         json:
           title: req.body.title || 'ThrowAndTell Report'
-          body: req.body.body + '\n\nReported By [ThrowAndTell](' + sit.config.url + ')'
+          body: req.body.body + '\n\nReported By [ThrowAndTell](' + config.site.url + ')'
       , (err, GHIssueRes, issue) ->
         console.error err if err
 
