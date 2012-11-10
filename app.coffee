@@ -31,6 +31,8 @@ global.redisClient = redis.createClient config.redis.port, config.redis.host, {n
 
 if process.env.MONGOLAB_URI
   global.db = mongoose.createConnection(process.env.MONGOLAB_URI);
+else if process.env.MONGOHQ_URL
+  global.db = mongoose.createConnection(process.env.MONGOHQ_URL);
 else
   global.db = mongoose.createConnection(config.mongo.host, config.mongo.db);
 
