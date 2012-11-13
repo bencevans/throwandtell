@@ -153,6 +153,7 @@ app.post '/api/v1/report', (req, res, next) ->
           body: req.body.body + '\n\nReported By [ThrowAndTell](' + config.site.url + ')'
       , (err, GHIssueRes, issue) ->
         console.error err if err
+        res.send {error:false, result:true}
 
 app.post '/new', (req, res, next) ->
   keyData =
