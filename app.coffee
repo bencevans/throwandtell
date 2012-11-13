@@ -25,8 +25,11 @@ global.config =
     host: process.env.MONGO_HOST || 'localhost'
     db: process.env.MONGO_DB || 'ThrowAndTell'
   github:
-    clientId: process.env.GITHUB_CLIENTID || '8aad25eb6fae91c19f59'
-    clientSecret: process.env.GITHUB_CLIENTSECRET || '78a9cd3c406312cdfc2f50c365c5498be91f76bb'
+    clientId: process.env.GITHUB_CLIENTID || false
+    clientSecret: process.env.GITHUB_CLIENTSECRET || false
+
+if not config.github.clientId or not clientSecret
+  console.log 'WARNING: There is no GitHub Authentication Info Set.'
 
 # DB Connections
 global.redisClient = redis.createClient config.redis.port, config.redis.host, {no_ready_check: config.redis.noReadyCheck}
