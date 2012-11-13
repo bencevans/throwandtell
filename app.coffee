@@ -66,6 +66,7 @@ app.use express.logger('dev')
 app.use express.bodyParser()
 app.use express.cookieParser('Newton Faulkner, Keep this secure')
 app.use express.cookieSession()
+
 # Auth req.user = profile
 app.use (req, res, next) ->
   if req.session.user
@@ -84,22 +85,11 @@ app.use (req, res, next) ->
     req.session.flashes = []
   next()
 
-# Routes
-app.get '/', (req, res, next) ->
-  authenticated = false
-  #res.redirect '/auth' unless authenticated
-  if typeof req.session.user == 'undefined'
-    res.sendfile 'public/index.html'
-  else
-    Key.find
-      createdBy: req.user.id
-    , (err, keys) ->
-      next err if err
-      res.locals.keys = keys
-      res.render 'home'
+app.use express.static __dirname + '/public'
 
-app.get '/style.css', (req, res) ->
-  res.sendfile './public/style.css'
+# Routes
+
+# Auth Routes
 
 app.get '/auth', (req, res, next) ->
   res.redirect 'https://github.com/login/oauth/authorize?client_id=' + config.github.clientId + '&scope=repo'
@@ -138,6 +128,63 @@ app.get '/auth/callback', (req, res, next) ->
           req.session.user = user.id
           res.redirect '/'
 
+app.get '/logout', (req, res, next) ->
+  next() unless req.session
+  req.session = null
+  res.redirect '/'
+
+# Dashboard Routes
+
+app.get '/', (req, res, next) ->
+  authenticated = false
+  #res.redirect '/auth' unless authenticated
+  if typeof req.session.user == 'undefined'
+    res.sendfile 'public/index.html'
+  else
+    Key.find
+      createdBy: req.user.id
+    , (err, keys) ->
+      next err if err
+      res.locals.keys = keys
+      res.render 'home'
+
+app.post '/new', (req, res, next) ->
+  keyData =
+    createdBy: req.user.id
+    repository: req.body.repository
+  generateKey keyData, (err, keyObject) ->
+    next err if err
+    res.redirect '/#key-' + keyObject._id
+
+
+app.get '/:key/delete', (req, res, next) ->
+  res.send 404 unless req.user
+  Key.findOne
+    _id: req.params.key
+    createdBy: req.user.id
+  , (err, doc) ->
+    next err if err
+    if doc
+      doc.remove (err) ->
+        next err if err
+        # Flashify Key {{_id}} Successfully Deleted
+        res.redirect '/'
+    else
+      res.send 404
+
+# Docs Routes
+
+app.get '/docs/*', (req, res, next) ->
+  docpath = path.resolve __dirname, './docs', req.params[0] + '.md'
+  fs.exists docpath, (exists) ->
+    if exists
+      fs.readFile docpath, (err, data) ->
+        res.type('html');
+        res.send marked data.toString()
+    else
+      next()
+
+# API Routes
 
 app.post '/api/v1/report', (req, res, next) ->
 
@@ -167,45 +214,9 @@ app.post '/api/v1/report', (req, res, next) ->
         console.error err if err
         res.send {error:false, result:true}
 
-app.get '/docs/*', (req, res, next) ->
-  docpath = path.resolve __dirname, './docs', req.params[0] + '.md'
-  fs.exists docpath, (exists) ->
-    if exists
-      fs.readFile docpath, (err, data) ->
-        res.type('html');
-        res.send marked data.toString()
-    else
-      next()
-
-app.post '/new', (req, res, next) ->
-  keyData =
-    createdBy: req.user.id
-    repository: req.body.repository
-  generateKey keyData, (err, keyObject) ->
-    next err if err
-    res.redirect '/#key-' + keyObject._id
-
-app.get '/logout', (req, res, next) ->
-  next() unless req.session
-  req.session = null
-  res.redirect '/'
-
-app.get '/:key/delete', (req, res, next) ->
-  res.send 404 unless req.user
-  Key.findOne
-    _id: req.params.key
-    createdBy: req.user.id
-  , (err, doc) ->
-    next err if err
-    if doc
-      doc.remove (err) ->
-        next err if err
-        # Flashify Key {{_id}} Successfully Deleted
-        res.redirect '/'
-    else
-      res.send 404
 
 # Start Up (Possibly After Redis Auth)
+
 if config.redis.auth
   redisClient.on 'ready', () ->
     redisClient.auth config.redis.auth ,(err) ->
