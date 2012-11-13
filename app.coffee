@@ -1,5 +1,6 @@
 
 # Dependencies
+path = require 'path'
 express = require 'express'
 app = express()
 http = require 'http'
@@ -8,6 +9,7 @@ request = require 'request'
 redis = require 'redis'
 mongoose = require 'mongoose'
 fs = require 'fs'
+marked = require 'marked'
 require './helpers'
 
 global.config =
@@ -46,6 +48,16 @@ for filename in schemaFiles
   schemaName = splitFilename[0].charAt(0).toUpperCase() + splitFilename[0].slice(1);
   global[schemaName] = db.model schemaName, new mongoose.Schema(require('./db/schemas/' + filename))
 
+# Marked (Markdown Render Config)
+marked.setOptions
+  gfm: true
+  pedantic: false
+  sanitize: true
+
+  # callback for code highlighter
+  highlight: (code, lang) ->
+    return javascriptHighlighter(code)  if lang is "js"
+    code
 
 # Config
 app.set 'view engine', 'html'
@@ -154,6 +166,16 @@ app.post '/api/v1/report', (req, res, next) ->
       , (err, GHIssueRes, issue) ->
         console.error err if err
         res.send {error:false, result:true}
+
+app.get '/docs/*', (req, res, next) ->
+  docpath = path.resolve __dirname, './docs', req.params[0] + '.md'
+  fs.exists docpath, (exists) ->
+    if exists
+      fs.readFile docpath, (err, data) ->
+        res.type('html');
+        res.send marked data.toString()
+    else
+      next()
 
 app.post '/new', (req, res, next) ->
   keyData =
