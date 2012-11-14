@@ -142,7 +142,7 @@ app.get '/', (req, res, next) ->
   authenticated = false
   #res.redirect '/auth' unless authenticated
   if typeof req.session.user == 'undefined'
-    res.sendfile 'public/index.html'
+    res.render 'index'
   else
     Key.find
       createdBy: req.user.id
@@ -182,8 +182,9 @@ app.get '/docs/*', (req, res, next) ->
   fs.exists docpath, (exists) ->
     if exists
       fs.readFile docpath, (err, data) ->
-        res.type('html');
-        res.send marked data.toString()
+        res.render 'layout',
+          layout: false
+          body: marked data.toString()
     else
       next()
 
