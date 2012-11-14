@@ -177,6 +177,9 @@ app.get '/:key/delete', (req, res, next) ->
 
 # Docs Routes
 
+app.get '/docs/api', (req, res, next) ->
+  res.redirect '/docs/api/v1'
+
 app.get '/docs/*', (req, res, next) ->
   docpath = path.resolve __dirname, './docs', req.params[0] + '.md'
   fs.exists docpath, (exists) ->
