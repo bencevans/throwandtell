@@ -28,7 +28,7 @@ global.config =
     clientId: process.env.GITHUB_CLIENTID || false
     clientSecret: process.env.GITHUB_CLIENTSECRET || false
 
-if not config.github.clientId or not clientSecret
+if not config.github.clientId or not config.github.clientSecret
   console.log 'WARNING: There is no GitHub Authentication Info Set.'
 
 # DB Connections
