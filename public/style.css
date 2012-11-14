@@ -23,6 +23,11 @@ header .container h1 {
   font-weight: bold;
   padding-left: 0;
 }
+header .container h1 a {
+  font-size:20px;
+  color: #fff;
+  padding:0;
+}
 header .container a {
   font-size:16px;
   padding:12px;
