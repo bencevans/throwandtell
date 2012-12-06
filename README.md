@@ -41,3 +41,7 @@ Take note of the Client ID & Secret.
 ### Visit the Site
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+# Licence
+
+(MIT Licence)
