@@ -2,11 +2,9 @@
 
 Automated Error Reporter. Bots, Servers, Monkeys... can automatically open an Issue on [GitHub](https://gihub.com) containing the error's message, stack trace, and any other data may want to fix the bug.
 
-## Usage
-
 This Repo provides the software that acts as a middle-man between your app and GitHub API.
 
-The ThrowAndTell API Docs can be found at ./docs/api/v1.md
+The ThrowAndTell API Docs can be found at [./docs/api/v1.md](https://github.com/bencevans/throwandtell/blob/master/docs/api/api/v1.md)
 
 ## API Clients
 
