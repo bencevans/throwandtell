@@ -8,6 +8,10 @@ This Repo provides the software that acts as a middle-man between your app and G
 
 The ThrowAndTell API Docs can be found at ./docs/api/v1.md
 
+## API Clients
+
+A list of API Clients can be found [here](https://github.com/bencevans/throwandtell/blob/master/docs/api/clients.md).
+
 ## Requirements
 
 * NodeJS (0.8.x) & NPM
